@@ -23,21 +23,21 @@ runs:
       shell: bash --noprofile --norc -x -eo pipefail {0}
       run: |
         VERSION="$(git describe --abbrev=0 --tags | sed 's/[a-zA-Z]//g' | cut -d '.' -f -2)";
-        sdk="$(node -p "${{ inputs.features }}.map((x) => x.name + x.version).join('-')")";
+        sdk="$(node -p '${{ inputs.features }}.map((x) => x.name + x.version).join("-")')";
         echo "tag=${VERSION:-latest}-${sdk}-${inputs.os}" >> $GITHUB_OUTPUT;
 
-        node -e "
+        node -e '
 
-        var json = JSON.parse(require('fs').readFileSync('./image/.devcontainer.json'));
+        var json = JSON.parse(require("fs").readFileSync("./image/.devcontainer.json"));
 
-        json.build.args.BASE = '${{ inputs.os }}';
+        json.build.args.BASE = "${{ inputs.os }}";
 
         ${{ inputs.features }}.forEach(({name, ...feature}) => {
           var i = json.overrideFeatureInstallOrder.length - 1;
-          var f = 'ghcr.io/rapidsai/devcontainers/features/' + name;
-          json.features[f + ':${VERSION:-latest}'] = feature;
+          var f = "ghcr.io/rapidsai/devcontainers/features/" + name;
+          json.features[f + ":latest"] = feature;
           json.overrideFeatureInstallOrder.splice(i, 0, f);
         });
 
-        require('fs').writeFileSync('./image/.devcontainer.json', JSON.stringify(json));
-        "
+        require("fs").writeFileSync("./image/.devcontainer.json", JSON.stringify(json));
+        '
