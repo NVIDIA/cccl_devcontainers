@@ -47,7 +47,7 @@ runs:
         .filter(([sdk, ver]) => sdk && ver)
         .forEach(([sdk, ver]) => {
           var i = json.overrideFeatureInstallOrder.length - 1;
-          var f = 'ghcr.io/nvidia/cccl_devcontainers/features/' + sdk;
+          var f = 'ghcr.io/NVIDIA/cccl_devcontainers/features/' + sdk;
           json.features[f + ':latest'] = { version: ver };
           json.overrideFeatureInstallOrder.splice(i, 0, f);
         });

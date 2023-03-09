@@ -21,8 +21,8 @@ jobs:
         name: Check PR Event
         shell: bash
         run: |
-          [[ '${{ github.event_name }}' == 'push' && '${{ github.repository }}' == 'nvidia/cccl_devcontainers' ]] || \
-          [[ '${{ github.event_name }}' == 'pull_request' && '${{ github.repository }}' != 'nvidia/cccl_devcontainers' ]] \
+          [[ '${{ github.event_name }}' == 'push' && '${{ github.repository }}' == 'NVIDIA/cccl_devcontainers' ]] || \
+          [[ '${{ github.event_name }}' == 'pull_request' && '${{ github.repository }}' != 'NVIDIA/cccl_devcontainers' ]] \
           && echo "ok=true"  | tee -a $GITHUB_OUTPUT \
           || echo "ok=false" | tee -a $GITHUB_OUTPUT;
 
