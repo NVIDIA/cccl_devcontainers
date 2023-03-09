@@ -6,6 +6,9 @@ on:
       os:
         type: string
         required: true
+      tag:
+        type: string
+        required: true
       features:
         type: string
         required: true
@@ -31,6 +34,7 @@ jobs:
         uses: ./.github/actions/devcontainer-json
         with:
           os : "${{ inputs.os }}"
+          tag : "${{ inputs.tag }}"
           features: "${{ inputs.features }}"
 
       - name: Build and test ${{ steps.json.outputs.tag }}-${{ matrix.arch }}

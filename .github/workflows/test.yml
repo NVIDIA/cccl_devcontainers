@@ -1,4 +1,4 @@
-name: Test
+name: PR
 
 concurrency:
   group: test-on-${{ github.event_name }}-from-${{ github.ref_name }}
@@ -44,7 +44,7 @@ jobs:
 
   test-images:
     if: needs.image-matrix.outputs.matrix != '{"include":[]}'
-    name: Image
+    name: ${{ matrix.tag }}-${{ matrix.os }}
     needs: image-matrix
     secrets: inherit
     uses: ./.github/workflows/build-and-test-image.yml
@@ -53,4 +53,5 @@ jobs:
       matrix: ${{ fromJSON(needs.image-matrix.outputs.matrix) }}
     with:
       os : "${{ matrix.os }}"
+      tag: "${{ matrix.tag }}"
       features: "${{ matrix.features }}"

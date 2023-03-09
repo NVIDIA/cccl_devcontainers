@@ -20,10 +20,10 @@ runs:
 
     - id: json
       name: Make image/.devcontainer.json
-      shell: bash -eo pipefail {0}
+      shell: bash --noprofile --norc -x -eo pipefail {0}
       run: |
         VERSION="$(git describe --abbrev=0 --tags | sed 's/[a-zA-Z]//g' | cut -d '.' -f -2)";
-        sdk="$(node -p '${{ inputs.features }}.map((x) => x.name + x.version).join("-")')";
+        sdk="$(node -p "${{ inputs.features }}.map((x) => x.name + x.version).join('-')")";
         echo "tag=${VERSION:-latest}-${sdk}-${inputs.os}" >> $GITHUB_OUTPUT;
 
         node -e "
@@ -34,7 +34,7 @@ runs:
 
         ${{ inputs.features }}.forEach(({name, version}) => {
           var i = json.overrideFeatureInstallOrder.length - 1;
-          var f = 'ghcr.io/NVIDIA/cccl_devcontainers/features/' + name;
+          var f = 'ghcr.io/rapidsai/devcontainers/features/' + name;
           json.features[f + ':${VERSION:-latest}'] = { version };
           json.overrideFeatureInstallOrder.splice(i, 0, f);
         });
