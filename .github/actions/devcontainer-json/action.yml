@@ -24,7 +24,7 @@ runs:
       run: |
         VERSION="$(git describe --abbrev=0 --tags | sed 's/[a-zA-Z]//g' | cut -d '.' -f -2)";
         sdk="$(node -p '${{ inputs.features }}.map((x) => x.name + x.version).join("-")')";
-        echo "tag=${VERSION:-latest}-${sdk}-${inputs.os}" >> $GITHUB_OUTPUT;
+        echo "tag=${VERSION:-latest}-${sdk}-${{ inputs.os }}" >> $GITHUB_OUTPUT;
 
         node -e '
 
