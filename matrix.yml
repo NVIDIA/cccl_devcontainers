@@ -1,31 +1,31 @@
-- { os: "ubuntu22.04", features: [{name: "nvhpc", version: "23.1"}] }
-- { os: "ubuntu18.04", features: [{name: "gcc",   version: "7",  }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-- { os: "ubuntu18.04", features: [{name: "gcc",   version: "7",  }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu18.04", features: [{name: "gcc",   version: "8",  }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-- { os: "ubuntu18.04", features: [{name: "gcc",   version: "8",  }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu20.04", features: [{name: "gcc",   version: "9",  }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-- { os: "ubuntu20.04", features: [{name: "gcc",   version: "9",  }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu20.04", features: [{name: "gcc",   version: "10", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-- { os: "ubuntu20.04", features: [{name: "gcc",   version: "10", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "gcc",   version: "11", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "gcc",   version: "11", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "gcc",   version: "12", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "gcc",   version: "12", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "9",  }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "9",  }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "10", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "10", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "11", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "11", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "12", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "12", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "13", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "13", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "14", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "14", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "15", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "15", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "16", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-- { os: "ubuntu22.04", features: [{name: "llvm",  version: "16", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-# - { os: "ubuntu22.04", features: [{name: "llvm",  version: "17", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-# - { os: "ubuntu22.04", features: [{name: "llvm",  version: "17", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "nvhpc", version: "23.1"}] }
+- { os: "ubuntu:18.04", features: [{name: "gcc",   version: "7",  }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
+- { os: "ubuntu:18.04", features: [{name: "gcc",   version: "7",  }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:18.04", features: [{name: "gcc",   version: "8",  }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
+- { os: "ubuntu:18.04", features: [{name: "gcc",   version: "8",  }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:20.04", features: [{name: "gcc",   version: "9",  }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
+- { os: "ubuntu:20.04", features: [{name: "gcc",   version: "9",  }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:20.04", features: [{name: "gcc",   version: "10", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
+- { os: "ubuntu:20.04", features: [{name: "gcc",   version: "10", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "gcc",   version: "11", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "gcc",   version: "11", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "gcc",   version: "12", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "gcc",   version: "12", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "9",  }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "9",  }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "10", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "10", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "11", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "11", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "12", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "12", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "13", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "13", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "14", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "14", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "15", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "15", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "16", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
+- { os: "ubuntu:22.04", features: [{name: "llvm",  version: "16", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+# - { os: "ubuntu:22.04", features: [{name: "llvm",  version: "17", }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
+# - { os: "ubuntu:22.04", features: [{name: "llvm",  version: "17", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }

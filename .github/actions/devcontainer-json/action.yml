@@ -24,7 +24,8 @@ runs:
       run: |
         VERSION="$(git describe --abbrev=0 --tags | sed 's/[a-zA-Z]//g' | cut -d '.' -f -2)";
         sdk="$(node -p '${{ inputs.features }}.map((x) => x.name + x.version).join("-")')";
-        echo "tag=${VERSION:-latest}-${sdk}-${{ inputs.os }}" >> $GITHUB_OUTPUT;
+        tag="${VERSION:-latest}-${sdk}-$(echo '${{ inputs.os }}' | tr -d :)";
+        echo "tag=${tag}" >> $GITHUB_OUTPUT;
 
         node -e '
 
@@ -41,3 +42,7 @@ runs:
 
         require("fs").writeFileSync("./image/.devcontainer.json", JSON.stringify(json));
         '
+
+        echo "image: ghcr.io/${{ github.repository_owner }}/cccl/devcontainers:${tag}";
+        echo "devcontainer.json:";
+        cat "./image/.devcontainer.json";
