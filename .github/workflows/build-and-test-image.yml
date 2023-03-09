@@ -6,13 +6,7 @@ on:
       os:
         type: string
         required: true
-      sdk:
-        type: string
-        required: true
-      ver:
-        type: string
-        required: true
-      ctk:
+      features:
         type: string
         required: true
 
@@ -37,9 +31,7 @@ jobs:
         uses: ./.github/actions/devcontainer-json
         with:
           os : "${{ inputs.os }}"
-          sdk: "${{ inputs.sdk }}"
-          ver: "${{ inputs.ver }}"
-          ctk: "${{ inputs.ctk }}"
+          features: "${{ inputs.features }}"
 
       - name: Build and test ${{ steps.json.outputs.tag }}-${{ matrix.arch }}
         uses: ./.github/actions/build-and-test-image

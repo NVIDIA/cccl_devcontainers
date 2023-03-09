@@ -53,6 +53,4 @@ jobs:
       matrix: ${{ fromJSON(needs.image-matrix.outputs.matrix) }}
     with:
       os : "${{ matrix.os }}"
-      sdk: "${{ matrix.sdk }}"
-      ver: "${{ matrix.ver }}"
-      ctk: "${{ matrix.ctk }}"
+      features: "${{ matrix.features }}"

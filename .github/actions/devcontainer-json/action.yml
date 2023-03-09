@@ -6,13 +6,7 @@ inputs:
   os:
     type: string
     required: true
-  sdk:
-    type: string
-    required: true
-  ver:
-    type: string
-    required: true
-  ctk:
+  features:
     type: string
     required: true
 
@@ -27,12 +21,10 @@ runs:
     - id: json
       name: Make image/.devcontainer.json
       shell: bash -eo pipefail {0}
-      env:
-        ctk: "${{ inputs.ctk }}"
       run: |
-        VER="$(git describe --abbrev=0 --tags | sed 's/[a-zA-Z]//g' | cut -d '.' -f -2)";
-        tag="${VER:-dev}-${inputs.sdk}${inputs.ver}${ctk:+-cuda${ctk}}-${inputs.os}";
-        echo "tag=$tag" >> $GITHUB_OUTPUT;
+        VERSION="$(git describe --abbrev=0 --tags | sed 's/[a-zA-Z]//g' | cut -d '.' -f -2)";
+        sdk="$(node -p '${{ inputs.features }}.map((x) => x.name + x.version).join("-")')";
+        echo "tag=${VERSION:-latest}-${sdk}-${inputs.os}" >> $GITHUB_OUTPUT;
 
         node -e "
 
@@ -40,15 +32,10 @@ runs:
 
         json.build.args.BASE = '${{ inputs.os }}';
 
-        [
-          ['${{ inputs.sdk }}', '${{ inputs.ver }}'],
-          ['cuda', '${{ inputs.ctk }}']
-        ]
-        .filter(([sdk, ver]) => sdk && ver)
-        .forEach(([sdk, ver]) => {
+        ${{ inputs.features }}.forEach(({name, version}) => {
           var i = json.overrideFeatureInstallOrder.length - 1;
-          var f = 'ghcr.io/NVIDIA/cccl_devcontainers/features/' + sdk;
-          json.features[f + ':latest'] = { version: ver };
+          var f = 'ghcr.io/NVIDIA/cccl_devcontainers/features/' + name;
+          json.features[f + ':${VERSION:-latest}'] = { version };
           json.overrideFeatureInstallOrder.splice(i, 0, f);
         });
 
