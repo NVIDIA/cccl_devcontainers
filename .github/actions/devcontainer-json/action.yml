@@ -32,10 +32,10 @@ runs:
 
         json.build.args.BASE = '${{ inputs.os }}';
 
-        ${{ inputs.features }}.forEach(({name, version}) => {
+        ${{ inputs.features }}.forEach(({name, ...feature}) => {
           var i = json.overrideFeatureInstallOrder.length - 1;
           var f = 'ghcr.io/rapidsai/devcontainers/features/' + name;
-          json.features[f + ':${VERSION:-latest}'] = { version };
+          json.features[f + ':${VERSION:-latest}'] = feature;
           json.overrideFeatureInstallOrder.splice(i, 0, f);
         });
 
