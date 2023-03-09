@@ -13,5 +13,5 @@ runs:
       run: |
         # output the matrix
         cat <<EOF | tee -a $GITHUB_OUTPUT
-        matrix={"include":$(yq -ceM -o json matrix.yml)}
+        matrix={"include":$(cat matrix.yml | yq -eM -o json | jq -ceM)}
         EOF
