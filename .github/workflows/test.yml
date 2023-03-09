@@ -49,7 +49,8 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/build-and-test-image.yml
     strategy:
-      fail-fast: false
+      fail-fast: true
+      max-parallel: 2
       matrix: ${{ fromJSON(needs.image-matrix.outputs.matrix) }}
     with:
       os : "${{ matrix.os }}"
