@@ -1,0 +1,56 @@
+name: devcontainer-json
+
+description: Make .devcontainer.json
+
+inputs:
+  os:
+    type: string
+    required: true
+  sdk:
+    type: string
+    required: true
+  ver:
+    type: string
+    required: true
+  ctk:
+    type: string
+    required: true
+
+outputs:
+  tag:
+    value: ${{ steps.json.outputs.tag }}
+
+runs:
+  using: composite
+  steps:
+
+    - id: json
+      name: Make image/.devcontainer.json
+      shell: bash -eo pipefail {0}
+      env:
+        ctk: "${{ inputs.ctk }}"
+      run: |
+        VER="$(git describe --abbrev=0 --tags | sed 's/[a-zA-Z]//g' | cut -d '.' -f -2)";
+        tag="${VER:-dev}-${inputs.sdk}${inputs.ver}${ctk:+-cuda${ctk}}-${inputs.os}";
+        echo "tag=$tag" >> $GITHUB_OUTPUT;
+
+        node -e "
+
+        var json = JSON.parse(require('fs').readFileSync('./image/.devcontainer.json'));
+
+        json.build.args.BASE = '${{ inputs.os }}';
+
+        [
+          ['${{ inputs.sdk }}', '${{ inputs.ver }}'],
+          ['cuda', '${{ inputs.ctk }}']
+        ]
+        .filter(([sdk, ver]) => sdk && ver)
+        .forEach(([sdk, ver]) => {
+          var i = json.overrideFeatureInstallOrder.length - 1;
+          var f = 'ghcr.io/nvidia/cccl_devcontainers/features/' + sdk;
+          json.features[f + ':latest'] = { version: ver };
+          json.overrideFeatureInstallOrder.splice(i, 0, f);
+        });
+
+        require('fs').writeFileSync('./image/.devcontainer.json', JSON.stringify(json));
+        "

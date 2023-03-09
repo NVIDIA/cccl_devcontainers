@@ -1,0 +1,58 @@
+name: Test
+
+concurrency:
+  group: test-on-${{ github.event_name }}-from-${{ github.ref_name }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "pull-request/[0-9]+"
+
+jobs:
+  check-event:
+    name: Check PR Event
+    runs-on: ubuntu-latest
+    outputs:
+      ok: ${{ steps.check_pr_event.outputs.ok }}
+    steps:
+      - id: check_pr_event
+        name: Check PR Event
+        shell: bash
+        run: |
+          [[ '${{ github.event_name }}' == 'push' && '${{ github.repository }}' == 'nvidia/cccl_devcontainers' ]] || \
+          [[ '${{ github.event_name }}' == 'pull_request' && '${{ github.repository }}' != 'nvidia/cccl_devcontainers' ]] \
+          && echo "ok=true"  | tee -a $GITHUB_OUTPUT \
+          || echo "ok=false" | tee -a $GITHUB_OUTPUT;
+
+  image-matrix:
+    if: needs.check-event.outputs.ok == 'true'
+    name: Determine image matrix
+    needs: check-event
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+      - id: matrix
+        name: Determine image matrix
+        uses: ./.github/actions/image-matrix
+
+  test-images:
+    if: needs.image-matrix.outputs.matrix != '{"include":[]}'
+    name: Image
+    needs: image-matrix
+    secrets: inherit
+    uses: ./.github/workflows/build-and-test-image.yml
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.image-matrix.outputs.matrix) }}
+    with:
+      os : "${{ matrix.os }}"
+      sdk: "${{ matrix.sdk }}"
+      ver: "${{ matrix.ver }}"
+      ctk: "${{ matrix.ctk }}"

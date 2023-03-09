@@ -1,0 +1,17 @@
+name: image-matrix
+
+outputs:
+  matrix:
+    value: ${{ steps.matrix.outputs.matrix }}
+
+runs:
+  using: composite
+  steps:
+    - name: Determine the image matrix
+      id: matrix
+      shell: bash
+      run: |
+        # output the matrix
+        cat <<EOF | tee -a $GITHUB_OUTPUT
+        matrix={"include":$(yq -ceM -o json matrix.yml)}
+        EOF

@@ -1,0 +1,39 @@
+name: build-and-test-image
+
+description: Test image
+
+inputs:
+  tag:
+    type: string
+    required: true
+    description: Image tag
+  arch:
+    type: string
+    required: true
+    description: Image arch
+  repository:
+    type: string
+    required: true
+    description: Docker Hub repository
+
+runs:
+  using: composite
+  steps:
+
+    - name: Setup runner environment
+      uses: ./.github/actions/setup-runner-env
+
+    - name: Build ghcr.io/${{ github.repository_owner }}/cccl/devcontainers:${{ inputs.tag }}-${{ inputs.arch }}
+      uses: devcontainers/ci@v0.2
+      env:
+        NODE_NO_WARNINGS: 1
+      with:
+        push: never
+        skipContainerUserIdUpdate: true
+        subFolder: image
+        imageTag: ${{ inputs.tag }}-${{ inputs.arch }}
+        imageName: ghcr.io/${{ github.repository_owner }}/cccl/devcontainers
+        cacheFrom: docker.io/${{ inputs.repository }}:${{ inputs.tag }}
+        # Set platform to an empty string when using self-hosted runners so
+        # devcontainers/ci doesn't try to use skopeo (ubuntu 20.10+ only)
+        platform: ${{ contains(runner.name, 'rapidsai') != true && format('linux/{0}', inputs.arch) || '' }}
