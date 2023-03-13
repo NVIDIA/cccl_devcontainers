@@ -4,15 +4,15 @@
 - { os: "ubuntu:18.04", features: [{name: "gcc",   version: "8",  }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
 - { os: "ubuntu:18.04", features: [{name: "gcc",   version: "9",  }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
 - { os: "ubuntu:18.04", features: [{name: "llvm",  version: "9",  }, {name: "cuda", version: "11.0", pruneStaticLibs: true}] }
-- { os: "ubuntu:18.04", features: [{name: "llvm",  version: "9",  }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu:18.04", features: [{name: "llvm",  version: "10", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu:18.04", features: [{name: "llvm",  version: "11", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
-- { os: "ubuntu:18.04", features: [{name: "llvm",  version: "12", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
 
 - { os: "ubuntu:20.04", features: [{name: "gcc",   version: "7",  }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
 - { os: "ubuntu:20.04", features: [{name: "gcc",   version: "8",  }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
 - { os: "ubuntu:20.04", features: [{name: "gcc",   version: "9",  }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
 - { os: "ubuntu:20.04", features: [{name: "gcc",   version: "10", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:20.04", features: [{name: "llvm",  version: "9",  }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:20.04", features: [{name: "llvm",  version: "10", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:20.04", features: [{name: "llvm",  version: "11", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
+- { os: "ubuntu:20.04", features: [{name: "llvm",  version: "12", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
 - { os: "ubuntu:20.04", features: [{name: "llvm",  version: "13", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
 - { os: "ubuntu:20.04", features: [{name: "llvm",  version: "14", }, {name: "cuda", version: "12.1", pruneStaticLibs: true}] }
 
