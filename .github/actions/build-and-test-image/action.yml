@@ -33,4 +33,4 @@ runs:
         cacheFrom: docker.io/${{ inputs.repository }}:${{ inputs.tag }}
         # Set platform to an empty string when using self-hosted runners so
         # devcontainers/ci doesn't try to use skopeo (ubuntu 20.10+ only)
-        platform: ${{ contains(runner.name, 'rapidsai') != true && format('linux/{0}', inputs.arch) || '' }}
+        platform: ${{ contains(runner.name, github.repository_owner) != true && format('linux/{0}', inputs.arch) || '' }}
