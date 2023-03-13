@@ -11,10 +11,10 @@ inputs:
     type: string
     required: true
     description: Image arch
-  repository:
+  repo:
     type: string
     required: true
-    description: Docker Hub repository
+    description: Image repository
 
 runs:
   using: composite
@@ -26,7 +26,7 @@ runs:
     - name: Install devcontainers CLI
       uses: ./.github/actions/install-devcontainers-cli
 
-    - name: Build ghcr.io/${{ github.repository_owner }}/cccl/devcontainers:${{ inputs.tag }}-${{ inputs.arch }}
+    - name: Build ghcr.io/${{ inputs.repo }}:${{ inputs.tag }}-${{ inputs.arch }}
       uses: devcontainers/ci@v0.2
       env:
         NODE_NO_WARNINGS: 1
@@ -35,8 +35,8 @@ runs:
         skipContainerUserIdUpdate: true
         subFolder: image
         imageTag: ${{ inputs.tag }}-${{ inputs.arch }}
-        imageName: ghcr.io/${{ github.repository_owner }}/cccl/devcontainers
-        cacheFrom: docker.io/${{ inputs.repository }}:${{ inputs.tag }}
+        imageName: ghcr.io/${{ inputs.repo }}
+        cacheFrom: docker.io/${{ inputs.repo }}:${{ inputs.tag }}
         # Set platform to an empty string when using self-hosted runners so
         # devcontainers/ci doesn't try to use skopeo (ubuntu 20.10+ only)
-        platform: ${{ contains(runner.name, github.repository_owner) != true && format('linux/{0}', inputs.arch) || '' }}
+        platform: ${{ contains(runner.name, 'nvidia') != true && format('linux/{0}', inputs.arch) || '' }}

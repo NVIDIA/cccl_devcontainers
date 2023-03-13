@@ -41,4 +41,4 @@ jobs:
         with:
           arch: "${{ matrix.arch }}"
           tag: "${{ steps.json.outputs.tag }}"
-          repository: "${{ vars.DOCKERHUB_REPOSITORY || github.repository }}"
+          repo: "${{ format('{0}/cccl/devcontainers', github.repository_owner == 'NVIDIA' ? 'nvidia' : github.repository_owner) }}"
