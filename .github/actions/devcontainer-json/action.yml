@@ -18,6 +18,12 @@ runs:
   using: composite
   steps:
 
+    - name: Setup Node.js
+      if: contains(runner.name, github.repository_owner) == true
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
     - id: json
       name: Make image/.devcontainer.json
       shell: bash --noprofile --norc -x -eo pipefail {0}
