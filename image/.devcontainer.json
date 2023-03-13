@@ -1,0 +1,75 @@
+{
+  "build": {
+    "dockerfile": "./Dockerfile",
+    "context": ".",
+    "args": {
+        "BASE": "ubuntu22.04"
+    }
+  },
+  "remoteUser": "coder",
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "uid": "1000",
+      "gid": "1000",
+      "username": "coder",
+      "installZsh": "true",
+      "upgradePackages": "true"
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "ppa": "true"
+    },
+    "ghcr.io/devcontainers/features/git-lfs:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/rapidsai/devcontainers/features/cmake:latest": {},
+    "ghcr.io/rapidsai/devcontainers/features/ninja:latest": {},
+    "ghcr.io/rapidsai/devcontainers/features/sccache:latest": {
+      "version": "0.4.0-pre.7"
+    },
+    "ghcr.io/rapidsai/devcontainers/features/utils:latest": {}
+  },
+  "overrideFeatureInstallOrder": [
+    "ghcr.io/devcontainers/features/common-utils",
+    "ghcr.io/devcontainers/features/git",
+    "ghcr.io/devcontainers/features/git-lfs",
+    "ghcr.io/devcontainers/features/github-cli",
+    "ghcr.io/rapidsai/devcontainers/features/cmake",
+    "ghcr.io/rapidsai/devcontainers/features/ninja",
+    "ghcr.io/rapidsai/devcontainers/features/sccache",
+    "ghcr.io/rapidsai/devcontainers/features/utils"
+  ],
+  "updateContentCommand": [
+    "bash",
+    "-li",
+    "+o",
+    "history",
+    "/opt/devcontainer/bin/update-content-command.sh"
+  ],
+  "onCreateCommand": [
+    "bash",
+    "-li",
+    "+o",
+    "history",
+    "/opt/devcontainer/bin/on-create-command.sh"
+  ],
+  "postCreateCommand": [
+    "bash",
+    "-li",
+    "+o",
+    "history",
+    "/opt/devcontainer/bin/post-create-command.sh"
+  ],
+  "postStartCommand": [
+    "bash",
+    "-li",
+    "+o",
+    "history",
+    "/opt/devcontainer/bin/post-start-command.sh"
+  ],
+  "postAttachCommand": [
+    "bash",
+    "-li",
+    "+o",
+    "history",
+    "/opt/devcontainer/bin/post-attach-command.sh"
+  ]
+}

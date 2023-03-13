@@ -1,0 +1,42 @@
+name: build-and-test-image
+
+description: Test image
+
+inputs:
+  tag:
+    type: string
+    required: true
+    description: Image tag
+  arch:
+    type: string
+    required: true
+    description: Image arch
+  repo:
+    type: string
+    required: true
+    description: Image repository
+
+runs:
+  using: composite
+  steps:
+
+    - name: Setup runner environment
+      uses: ./.github/actions/setup-runner-env
+
+    - name: Install devcontainers CLI
+      uses: ./.github/actions/install-devcontainers-cli
+
+    - name: Build ghcr.io/${{ inputs.repo }}:${{ inputs.tag }}-${{ inputs.arch }}
+      uses: devcontainers/ci@v0.2
+      env:
+        NODE_NO_WARNINGS: 1
+      with:
+        push: never
+        skipContainerUserIdUpdate: true
+        subFolder: image
+        imageTag: ${{ inputs.tag }}-${{ inputs.arch }}
+        imageName: ghcr.io/${{ inputs.repo }}
+        cacheFrom: docker.io/${{ inputs.repo }}:${{ inputs.tag }}
+        # Set platform to an empty string when using self-hosted runners so
+        # devcontainers/ci doesn't try to use skopeo (ubuntu 20.10+ only)
+        platform: ${{ contains(runner.name, 'nvidia') != true && format('linux/{0}', inputs.arch) || '' }}
