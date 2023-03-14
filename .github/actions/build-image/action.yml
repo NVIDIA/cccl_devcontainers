@@ -1,6 +1,6 @@
-name: build-and-test-image
+name: build-image
 
-description: Test image
+description: Build image
 
 inputs:
   tag:
@@ -15,6 +15,11 @@ inputs:
     type: string
     required: true
     description: Image repository
+  push:
+    type: string
+    required: true
+    default: never
+    description: Push image to ghcr.io
 
 runs:
   using: composite
@@ -31,12 +36,12 @@ runs:
       env:
         NODE_NO_WARNINGS: 1
       with:
-        push: never
+        push: ${{ inputs.push }}
         skipContainerUserIdUpdate: true
         subFolder: image
         imageTag: ${{ inputs.tag }}-${{ inputs.arch }}
         imageName: ghcr.io/${{ inputs.repo }}
-        cacheFrom: docker.io/${{ inputs.repo }}:${{ inputs.tag }}
+        cacheFrom: ghcr.io/${{ inputs.repo }}:${{ inputs.tag }}
         # Set platform to an empty string when using self-hosted runners so
         # devcontainers/ci doesn't try to use skopeo (ubuntu 20.10+ only)
         platform: ${{ contains(runner.name, 'nvidia') != true && format('linux/{0}', inputs.arch) || '' }}

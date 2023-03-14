@@ -1,4 +1,4 @@
-name: Build and test devcontainer images
+name: Build and push devcontainer images
 
 on:
   workflow_call:
@@ -15,8 +15,8 @@ on:
 
 jobs:
 
-  build-and-test:
-    name: Build and test
+  build-and-push:
+    name: Build and push
     runs-on: ${{ fromJSON(github.repository != 'NVIDIA/cccl_devcontainers' && '"ubuntu-latest"' || format('{{"labels":["self-hosted", "linux", "{0}", "cpu4"]}}', matrix.arch)) }}
     strategy:
       fail-fast: false
@@ -36,10 +36,10 @@ jobs:
           os : "${{ inputs.os }}"
           features: "${{ inputs.features }}"
 
-      - name: Build and test ${{ steps.json.outputs.tag }}-${{ matrix.arch }}
+      - name: Build and push ${{ steps.json.outputs.tag }}-${{ matrix.arch }}
         uses: ./.github/actions/build-image
         with:
-          push: "never"
+          push: "always"
           arch: "${{ matrix.arch }}"
           tag: "${{ steps.json.outputs.tag }}"
           repo: "${{ format('{0}/cccl/devcontainers', github.repository_owner == 'NVIDIA' && 'nvidia' || github.repository_owner) }}"
