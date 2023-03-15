@@ -39,7 +39,7 @@ runs:
         push: ${{ inputs.push }}
         skipContainerUserIdUpdate: true
         subFolder: image
-        imageTag: ${{ inputs.tag }}
+        imageTag: ${{ inputs.tag }}-${{ inputs.arch }}
         imageName: ghcr.io/${{ inputs.repo }}
         cacheFrom: ghcr.io/${{ inputs.repo }}:${{ inputs.tag }}
         # Set platform to an empty string when using self-hosted runners so
