@@ -31,7 +31,7 @@ runs:
     - name: Install devcontainers CLI
       uses: ./.github/actions/install-devcontainers-cli
 
-    - if: inputs.push
+    - if: inputs.push == 'always'
       name: Login to ghcr.io
       uses: docker/login-action@v2
       with:
