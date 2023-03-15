@@ -1,4 +1,4 @@
-name: PR
+name: Release
 
 concurrency:
   group: release-on-${{ github.event_name }}-from-${{ github.ref_name }}
