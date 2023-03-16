@@ -36,7 +36,7 @@ runs:
       env:
         NODE_NO_WARNINGS: 1
       run: |
-        repo="$(echo "${{ inputs.repo }}" | | tr '[:upper:]' '[:lower:]')";
+        repo="$(echo "${{ inputs.repo }}" | tr '[:upper:]' '[:lower:]')";
         echo "repo=${repo}" >> $GITHUB_OUTPUT;
 
         devcontainer build \
