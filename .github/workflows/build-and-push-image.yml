@@ -89,7 +89,7 @@ jobs:
           docker manifest rm ${name} || true;
 
           # Load and push the linux/amd64 image
-          amd64_hash="$(docker load --input "${{ runner.temp }}/arm64.tar" | tail -n1 | cut -d':' -f3)";
+          amd64_hash="$(docker load --input "${{ runner.temp }}/amd64.tar" | tail -n1 | cut -d':' -f3)";
           docker image tag ${amd64_hash} ${name};
           amd64_hash="$(docker push ${name} | tail -n1 | cut -d' ' -f3)";
 
