@@ -15,11 +15,14 @@ on:
 
 jobs:
 
-  build-and-push:
-    name: Build and push
+  build-and-upload:
+    name: Build and upload
     runs-on: ${{ fromJSON(github.repository != 'NVIDIA/cccl_devcontainers' && '"ubuntu-latest"' || format('{{"labels":["self-hosted", "linux", "{0}", "cpu4"]}}', matrix.arch)) }}
     permissions:
-      packages: write
+      packages: read
+    outputs:
+      tag: ${{ steps.json.outputs.tag }}
+      repo: ${{ steps.build.outputs.repo }}
     strategy:
       fail-fast: false
       matrix:
@@ -38,10 +41,62 @@ jobs:
           os : "${{ inputs.os }}"
           features: "${{ inputs.features }}"
 
-      - name: Build and push ${{ steps.json.outputs.tag }}-${{ matrix.arch }}
+      - id: build
+        name: Build ${{ steps.json.outputs.tag }}-${{ matrix.arch }}
         uses: ./.github/actions/build-image
         with:
-          push: "always"
           arch: "${{ matrix.arch }}"
           tag: "${{ steps.json.outputs.tag }}"
-          repo: "${{ format('{0}/cccl/devcontainers', github.repository_owner == 'NVIDIA' && 'nvidia' || github.repository_owner) }}"
+          repo: "${{ format('{0}/cccl/devcontainers', github.repository_owner) }}"
+
+      - name: Upload ${{ steps.json.outputs.tag }}-${{ matrix.arch }}
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 1
+          name: ${{ steps.json.outputs.tag }}
+          path: ${{ runner.temp }}/${{ matrix.arch }}.tar
+
+  push-multiarch-manifest:
+    name: Push multiarch manifest
+    needs: build-and-upload
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Download ${{ needs.build-and-upload.outputs.tag }}
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ needs.build-and-upload.outputs.tag }}
+          path: ${{ runner.temp }}
+
+      - name: Login to ghcr.io
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ github.token }}
+
+      - name: Push multiarch manifest to ghcr.io
+        shell: bash --noprofile --norc -x -eo pipefail {0}
+        env:
+          tag: "${{ needs.build-and-upload.outputs.tag }}"
+        run: |
+
+          find "${{ runner.temp }}/" -type f -name '*.tar';
+
+          name="ghcr.io/${{ needs.build-and-upload.outputs.repo }}:${tag}";
+
+          docker manifest rm ${name} || true;
+
+          # Load and push the linux/amd64 image
+          amd64_hash="$(docker load --input "${{ runner.temp }}/arm64.tar" | tail -n1 | cut -d':' -f3)";
+          docker image tag ${amd64_hash} ${name};
+          amd64_hash="$(docker push ${name} | tail -n1 | cut -d' ' -f3)";
+
+          # Load and push the linux/arm64 image
+          arm64_hash="$(docker load --input "${{ runner.temp }}/arm64.tar" | tail -n1 | cut -d':' -f3)";
+          docker image tag ${arm64_hash} ${name};
+          arm64_hash="$(docker push ${name} | tail -n1 | cut -d' ' -f3)";
+
+          # Create and push the multiarch manifest
+          docker buildx imagetools create --tag ${name} ${amd64_hash} ${arm64_hash};

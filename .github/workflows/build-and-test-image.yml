@@ -41,7 +41,6 @@ jobs:
       - name: Build and test ${{ steps.json.outputs.tag }}-${{ matrix.arch }}
         uses: ./.github/actions/build-image
         with:
-          push: "never"
           arch: "${{ matrix.arch }}"
           tag: "${{ steps.json.outputs.tag }}"
-          repo: "${{ format('{0}/cccl/devcontainers', github.repository_owner == 'NVIDIA' && 'nvidia' || github.repository_owner) }}"
+          repo: "${{ format('{0}/cccl/devcontainers', github.repository_owner) }}"

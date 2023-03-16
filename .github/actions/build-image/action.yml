@@ -15,11 +15,10 @@ inputs:
     type: string
     required: true
     description: Image repository
-  push:
-    type: string
-    required: true
-    default: never
-    description: Push image to ghcr.io
+
+outputs:
+  repo:
+    value: ${{ steps.build.outputs.repo }}
 
 runs:
   using: composite
@@ -31,25 +30,19 @@ runs:
     - name: Install devcontainers CLI
       uses: ./.github/actions/install-devcontainers-cli
 
-    - if: inputs.push == 'always'
-      name: Login to ghcr.io
-      uses: docker/login-action@v2
-      with:
-        registry: ghcr.io
-        username: ${{ github.repository_owner }}
-        password: ${{ github.token }}
-
-    - name: Build ghcr.io/${{ inputs.repo }}:${{ inputs.tag }}-${{ inputs.arch }}
-      uses: devcontainers/ci@v0.3
+    - id: build
+      name: Build ghcr.io/${{ inputs.repo }}:${{ inputs.tag }}-${{ inputs.arch }}
+      shell: bash
       env:
         NODE_NO_WARNINGS: 1
-      with:
-        push: ${{ inputs.push }}
-        skipContainerUserIdUpdate: true
-        subFolder: image
-        imageTag: ${{ inputs.tag }}
-        imageName: ghcr.io/${{ inputs.repo }}
-        cacheFrom: ghcr.io/${{ inputs.repo }}:${{ inputs.tag }}
-        # Set platform to an empty string when using self-hosted runners so
-        # devcontainers/ci doesn't try to use skopeo (ubuntu 20.10+ only)
-        platform: ${{ contains(runner.name, 'nvidia') != true && format('linux/{0}', inputs.arch) || '' }}
+      run: |
+        repo="$(echo "${{ inputs.repo }}" | | tr '[:upper:]' '[:lower:]')";
+        echo "repo=${repo}" >> $GITHUB_OUTPUT;
+
+        devcontainer build \
+          --platform "linux/${{ inputs.arch }}" \
+          --workspace-folder "$(realpath -m ./image)" \
+          --cache-from "ghcr.io/${repo}:${{ inputs.tag }}" \
+          --image-name "ghcr.io/${repo}:${{ inputs.tag }}" \
+          --output "type=docker,dest=${{ runner.temp }}/${{ inputs.arch }}.tar" \
+          ;
