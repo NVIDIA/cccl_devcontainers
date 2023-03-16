@@ -44,5 +44,5 @@ runs:
           --workspace-folder "$(realpath -m ./image)" \
           --cache-from "ghcr.io/${repo}:${{ inputs.tag }}" \
           --image-name "ghcr.io/${repo}:${{ inputs.tag }}" \
-          --output "type=docker,dest=${{ runner.temp }}/${{ inputs.arch }}.tar" \
+          --output "type=oci,dest=${{ runner.temp }}/${{ inputs.arch }}.tar" \
           ;
