@@ -63,6 +63,18 @@ jobs:
     permissions:
       packages: write
     steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - if: contains(runner.name, 'nvidia') != true
+        name: Free up disk space
+        uses: ./.github/actions/free-disk-space
+        with:
+          tool_cache: "${{ runner.tool_cache }}"
+
       - name: Download ${{ needs.build-and-upload.outputs.tag }}
         uses: actions/download-artifact@v3
         with:
