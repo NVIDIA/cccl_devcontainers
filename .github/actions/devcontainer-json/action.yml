@@ -33,7 +33,7 @@ runs:
         tag="${VERSION:-latest}-${sdk}-$(echo '${{ inputs.os }}' | tr -d :)";
         echo "tag=${tag}" >> $GITHUB_OUTPUT;
 
-        node -e '
+        node -e "$(cat <<EOF
 
         var json = JSON.parse(require("fs").readFileSync("./image/.devcontainer.json"));
 
@@ -42,12 +42,13 @@ runs:
         ${{ inputs.features }}.forEach(({name, ...feature}) => {
           var i = json.overrideFeatureInstallOrder.length - 1;
           var f = "ghcr.io/rapidsai/devcontainers/features/" + name;
-          json.features[f + ":' + ${VERSION} + '"] = feature;
+          json.features[f + ":${VERSION}"] = feature;
           json.overrideFeatureInstallOrder.splice(i, 0, f);
         });
 
         require("fs").writeFileSync("./image/.devcontainer.json", JSON.stringify(json));
-        '
+        EOF
+        )"
 
         echo "image: ghcr.io/${{ github.repository_owner }}/cccl/devcontainers:${tag}";
         echo "devcontainer.json:";
