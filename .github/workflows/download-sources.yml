@@ -28,3 +28,6 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Setup runner environment
+        uses: ./.github/actions/setup-runner-env
