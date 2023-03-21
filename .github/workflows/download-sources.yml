@@ -52,10 +52,10 @@ jobs:
             docker rmi $(docker image ls -aq) || true;
             tag="$(echo "${VERSION:-latest}-${tag}" | tr -d :)";
             # Download apt sources
-            docker run --rm -it -u root -w /tmp/src \
+            docker run --rm -u root -w /tmp/src \
               -v "${{ runner.temp }}/${{ matrix.arch }}-srcs:/tmp/src" \
               -v "${{ runner.temp }}/download-srcs.sh:/usr/bin/download-srcs.sh" \
-              ghcr.io/${repo}:${tag} bash /usr/bin/download-srcs.sh
+              ghcr.io/${repo}:${tag} /bin/bash /usr/bin/download-srcs.sh;
           done
 
       - name: Upload ${{ matrix.arch }}-srcs
