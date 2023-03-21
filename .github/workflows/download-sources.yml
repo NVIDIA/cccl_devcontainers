@@ -28,8 +28,10 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+
       - name: Setup runner environment
         uses: ./.github/actions/setup-runner-env
+
       - name: Download apt sources
         shell: bash --noprofile --norc -x -eo pipefail {0}
         run: |
@@ -55,6 +57,7 @@ jobs:
               -v "${{ runner.temp }}/download-srcs.sh:/usr/bin/download-srcs.sh" \
               ghcr.io/${repo}:${tag} bash /usr/bin/download-srcs.sh
           done
+
         - name: Upload ${{ matrix.arch }}-srcs
           uses: actions/upload-artifact@v3
           with:
