@@ -43,6 +43,7 @@ jobs:
           ls -all .;
           find /etc/apt -type f -name '*.list' -exec sed -i -E 's/^# deb-src/deb-src/g' {} \;
           find /etc/apt -type f -name '*.list' -exec grep -H deb-src {} \;
+          apt update;
           dpkg --get-selections | grep -v deinstall | cut -f1 \
             | xargs -t -r -d'\n' -I% -n1 -P$(nproc) bash -c "apt source % || true"
           EOF
