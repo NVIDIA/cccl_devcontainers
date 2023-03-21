@@ -38,6 +38,8 @@ jobs:
           mkdir -p "${{ runner.temp }}/${{ matrix.arch }}-srcs";
 
           cat <<"EOF" > "${{ runner.temp }}/download-srcs.sh"
+          pwd;
+          ls -all .;
           find /etc/apt -type f -name '*.list' -exec sed -Ei 's/^# deb-src/deb-src/g' {} \;
           dpkg --get-selections | grep -v deinstall | cut -f1 \
             | xargs -t -r -d'\n' -I% -n1 -P$(nproc) bash -c "apt source % 2>/dev/null || true"
@@ -56,7 +58,9 @@ jobs:
               --platform linux/${{ matrix.arch }} \
               -v "${{ runner.temp }}/${{ matrix.arch }}-srcs:/tmp/src" \
               -v "${{ runner.temp }}/download-srcs.sh:/usr/bin/download-srcs.sh" \
-              ghcr.io/${repo}:${tag} /bin/bash /usr/bin/download-srcs.sh;
+              ghcr.io/${repo}:${tag} /bin/bash -x /usr/bin/download-srcs.sh;
+            # Show current files
+            ls -all ${{ runner.temp }}/${{ matrix.arch }}-srcs/;
           done
 
       - name: Upload ${{ matrix.arch }}-srcs
