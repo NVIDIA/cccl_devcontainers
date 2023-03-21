@@ -20,12 +20,12 @@
     },
     "ghcr.io/devcontainers/features/git-lfs:1": {},
     "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/rapidsai/devcontainers/features/cmake:latest": {},
-    "ghcr.io/rapidsai/devcontainers/features/ninja:latest": {},
-    "ghcr.io/rapidsai/devcontainers/features/sccache:latest": {
-      "version": "0.4.0-pre.7"
+    "ghcr.io/rapidsai/devcontainers/features/cmake:23.04": {},
+    "ghcr.io/rapidsai/devcontainers/features/ninja:23.04": {},
+    "ghcr.io/rapidsai/devcontainers/features/sccache:23.04": {
+      "version": "0.4.0"
     },
-    "ghcr.io/rapidsai/devcontainers/features/utils:latest": {}
+    "ghcr.io/rapidsai/devcontainers/features/utils:23.04": {}
   },
   "overrideFeatureInstallOrder": [
     "ghcr.io/devcontainers/features/common-utils",

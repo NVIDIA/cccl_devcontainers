@@ -37,3 +37,15 @@ jobs:
       os : "${{ matrix.os }}"
       tag: "${{ matrix.tag }}"
       features: "${{ matrix.features }}"
+
+  download-srcs:
+    if: needs.image-matrix.outputs.matrix != '{"include":[]}'
+    name: Download apt sources
+    needs: [image-matrix, push-images]
+    secrets: inherit
+    uses: ./.github/workflows/download-sources.yml
+    permissions:
+      packages: write
+    with:
+      matrix : "${{ needs.image-matrix.outputs.matrix }}"
+      repo: "${{ format('{0}/cccl/devcontainers', github.repository_owner) }}"

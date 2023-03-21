@@ -1,0 +1,66 @@
+name: Download sources for devcontainer image packages
+
+on:
+  workflow_call:
+    inputs:
+      matrix:
+        type: string
+        required: true
+      repo:
+        type: string
+        required: true
+        description: Image repository
+
+jobs:
+
+  download-sources:
+    name: Download apt sources
+    runs-on: ${{ fromJSON(github.repository != 'NVIDIA/cccl_devcontainers' && '"ubuntu-latest"' || format('{{"labels":["self-hosted", "linux", "{0}", "cpu4"]}}', matrix.arch)) }}
+    permissions:
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [amd64, arm64]
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup runner environment
+        uses: ./.github/actions/setup-runner-env
+
+      - name: Download apt sources
+        shell: bash --noprofile --norc -x -eo pipefail {0}
+        run: |
+          mkdir "${{ runner.temp }}/${{ matrix.arch }}-srcs";
+
+          cat <<"EOF" > download-srcs.sh
+          find /etc/apt -type f -name '*.list' -exec sed -Ei 's/^# deb-src/deb-src/g' {} \;
+          dpkg --get-selections | grep -v deinstall | cut -f1 \
+            | xargs -t -r -d'\n' -I% -n1 -P$(nproc) bash -c "apt source % 2>/dev/null || true"
+          EOF
+
+          repo="$(echo "${{ inputs.repo }}" | tr '[:upper:]' '[:lower:]')";
+          tags="$(echo '${{ inputs.matrix }}' | jq -r '.include | map(.tag + "-" + .os)[]')";
+          VERSION="$(git describe --abbrev=0 --tags | sed 's/[a-zA-Z]//g' | cut -d '.' -f -2)";
+
+          for tag in ${tags}; do
+            # Free up disk space
+            docker rmi $(docker image ls -aq) || true;
+            tag="$(echo ${VERSION:-latest}-${tag} | tr -d :)";
+            # Download apt sources
+            docker run --rm -it -u root -w /tmp/src \
+              -v "${{ runner.temp }}/${{ matrix.arch }}-srcs:/tmp/src" \
+              -v "$(pwd)/download-srcs.sh:/usr/bin/download-srcs.sh" \
+              ghcr.io/${repo}:${tag} bash /usr/bin/download-srcs.sh
+          done
+
+        - name: Upload ${{ matrix.arch }}-srcs
+          uses: actions/upload-artifact@v3
+          with:
+            retention-days: 1
+            name: ${{ matrix.arch }}-srcs
+            path: ${{ runner.temp }}/${{ matrix.arch }}-srcs

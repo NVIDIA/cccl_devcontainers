@@ -42,7 +42,7 @@ runs:
         ${{ inputs.features }}.forEach(({name, ...feature}) => {
           var i = json.overrideFeatureInstallOrder.length - 1;
           var f = "ghcr.io/rapidsai/devcontainers/features/" + name;
-          json.features[f + ":latest"] = feature;
+          json.features[f + ":' + ${VERSION} + '"] = feature;
           json.overrideFeatureInstallOrder.splice(i, 0, f);
         });
 
