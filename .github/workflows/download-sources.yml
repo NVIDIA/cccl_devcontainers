@@ -38,11 +38,13 @@ jobs:
           mkdir -p "${{ runner.temp }}/${{ matrix.arch }}-srcs";
 
           cat <<"EOF" > "${{ runner.temp }}/download-srcs.sh"
+          set -x;
           pwd;
           ls -all .;
-          find /etc/apt -type f -name '*.list' -exec sed -Ei 's/^# deb-src/deb-src/g' {} \;
+          find /etc/apt -type f -name '*.list' -exec sed -i -E 's/^# deb-src/deb-src/g' {} \;
+          find /etc/apt -type f -name '*.list' -exec grep -H deb-src {} \;
           dpkg --get-selections | grep -v deinstall | cut -f1 \
-            | xargs -t -r -d'\n' -I% -n1 -P$(nproc) bash -c "apt source % 2>/dev/null || true"
+            | xargs -t -r -d'\n' -I% -n1 -P$(nproc) bash -c "apt source % || true"
           EOF
 
           repo="$(echo '${{ inputs.repo }}' | tr '[:upper:]' '[:lower:]')";
@@ -50,17 +52,17 @@ jobs:
           VERSION="$(git describe --abbrev=0 --tags | sed 's/[a-zA-Z]//g' | cut -d '.' -f -2)";
 
           for tag in ${tags}; do
-            # Free up disk space
-            docker rmi $(docker image ls -aq) || true;
             tag="$(echo "${VERSION:-latest}-${tag}" | tr -d :)";
             # Download apt sources
             docker run --rm -tu root -w /tmp/src \
               --platform linux/${{ matrix.arch }} \
               -v "${{ runner.temp }}/${{ matrix.arch }}-srcs:/tmp/src" \
               -v "${{ runner.temp }}/download-srcs.sh:/usr/bin/download-srcs.sh" \
-              ghcr.io/${repo}:${tag} /bin/bash -x /usr/bin/download-srcs.sh;
+              ghcr.io/${repo}:${tag} /bin/bash /usr/bin/download-srcs.sh;
             # Show current files
             ls -all ${{ runner.temp }}/${{ matrix.arch }}-srcs/;
+            # Free up disk space
+            docker rmi ghcr.io/${repo}:${tag} || true;
           done
 
       - name: Upload ${{ matrix.arch }}-srcs
