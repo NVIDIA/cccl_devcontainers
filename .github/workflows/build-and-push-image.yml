@@ -17,7 +17,7 @@ jobs:
 
   build-and-upload:
     name: Build and upload
-    runs-on: ${{ fromJSON(github.repository != 'NVIDIA/cccl_devcontainers' && '"ubuntu-latest"' || format('{{"labels":["self-hosted", "linux", "{0}", "cpu4"]}}', matrix.arch)) }}
+    runs-on: ${{ fromJSON(github.repository != 'NVIDIA/cccl_devcontainers' && '"ubuntu-latest"' || format('"linux-{0}-cpu4"', matrix.arch)) }}
     permissions:
       packages: read
     outputs:

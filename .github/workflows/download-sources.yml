@@ -15,7 +15,7 @@ jobs:
 
   download-sources:
     name: Download apt sources
-    runs-on: ${{ fromJSON(github.repository != 'NVIDIA/cccl_devcontainers' && '"ubuntu-latest"' || format('{{"labels":["self-hosted", "linux", "{0}", "cpu4"]}}', matrix.arch)) }}
+    runs-on: ${{ fromJSON(github.repository != 'NVIDIA/cccl_devcontainers' && '"ubuntu-latest"' || format('"linux-{0}-cpu4"', matrix.arch)) }}
     permissions:
       packages: write
     strategy:
