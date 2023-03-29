@@ -1,0 +1,57 @@
+name: devcontainer-json
+
+description: Make .devcontainer.json
+
+inputs:
+  os:
+    type: string
+    required: true
+  features:
+    type: string
+    required: true
+
+outputs:
+  tag:
+    value: ${{ steps.json.outputs.tag }}
+
+runs:
+  using: composite
+  steps:
+
+    - name: Setup Node.js
+      if: contains(runner.name, 'nvidia') == true
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
+    - id: json
+      name: Make image/.devcontainer.json
+      shell: bash --noprofile --norc -x -eo pipefail {0}
+      run: |
+        VERSION="$(git describe --abbrev=0 --tags | sed 's/[a-zA-Z]//g' | cut -d '.' -f -2)";
+        VER="$(echo "${VERSION}" | sed -E 's/0([0-9]+)/\1/g' | cut -d '.' --complement -f3)";
+        sdk="$(node -p '${{ inputs.features }}.map((x) => x.name + x.version).join("-")')";
+        tag="${VERSION:-latest}-${sdk}-$(echo '${{ inputs.os }}' | tr -d :)";
+        echo "tag=${tag}" >> $GITHUB_OUTPUT;
+
+
+        node -e "$(cat <<EOF
+
+        var json = JSON.parse(require("fs").readFileSync("./image/.devcontainer.json"));
+
+        json.build.args.BASE = "${{ inputs.os }}";
+
+        ${{ inputs.features }}.forEach(({name, ...feature}) => {
+          var i = json.overrideFeatureInstallOrder.length - 1;
+          var f = "ghcr.io/rapidsai/devcontainers/features/" + name;
+          json.features[f + ":${VER}"] = feature;
+          json.overrideFeatureInstallOrder.splice(i, 0, f);
+        });
+
+        require("fs").writeFileSync("./image/.devcontainer.json", JSON.stringify(json));
+        EOF
+        )"
+
+        echo "image: ghcr.io/${{ github.repository_owner }}/cccl/devcontainers:${tag}";
+        echo "devcontainer.json:";
+        cat "./image/.devcontainer.json";

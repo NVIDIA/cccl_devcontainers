@@ -1,0 +1,46 @@
+name: Build and test devcontainer images
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        type: string
+        required: true
+      tag:
+        type: string
+        required: true
+      features:
+        type: string
+        required: true
+
+jobs:
+
+  build-and-test:
+    name: Build and test
+    runs-on: ${{ fromJSON(github.repository != 'NVIDIA/cccl_devcontainers' && '"ubuntu-latest"' || format('"linux-{0}-cpu4"', matrix.arch)) }}
+    permissions:
+      packages: read
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [amd64, arm64]
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - id: json
+        name: Write .devcontainer.json
+        uses: ./.github/actions/devcontainer-json
+        with:
+          os : "${{ inputs.os }}"
+          features: "${{ inputs.features }}"
+
+      - name: Build and test ${{ steps.json.outputs.tag }}-${{ matrix.arch }}
+        uses: ./.github/actions/build-image
+        with:
+          arch: "${{ matrix.arch }}"
+          tag: "${{ steps.json.outputs.tag }}"
+          repo: "${{ format('{0}/cccl/devcontainers', github.repository_owner) }}"

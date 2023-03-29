@@ -1,0 +1,78 @@
+name: Download devcontainer image package sources
+
+on:
+  workflow_call:
+    inputs:
+      matrix:
+        type: string
+        required: true
+      repo:
+        type: string
+        required: true
+        description: Image repository
+
+jobs:
+
+  download-sources:
+    name: Download apt sources
+    runs-on: ${{ fromJSON(github.repository != 'NVIDIA/cccl_devcontainers' && '"ubuntu-latest"' || format('"linux-{0}-cpu4"', matrix.arch)) }}
+    permissions:
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [amd64, arm64]
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup runner environment
+        uses: ./.github/actions/setup-runner-env
+
+      - name: Download apt sources
+        shell: bash --noprofile --norc -x -eo pipefail {0}
+        run: |
+          mkdir -p "${{ runner.temp }}/${{ matrix.arch }}-srcs";
+
+          cat <<"EOF" > "${{ runner.temp }}/download-apt-srcs.sh"
+          find /etc/apt -type f -name '*.list' -exec sed -Ei 's/^# deb-src/deb-src/g' {} \;
+          apt update -y && dpkg --get-selections | grep -v deinstall | cut -f1 \
+            | xargs -t -r -d'\n' -I% -n1 -P$(nproc) bash -c "apt source % 2>/dev/null || true";
+          EOF
+
+          VERSION="$(                      \
+            git describe --abbrev=0 --tags \
+          | sed 's/[a-zA-Z]//g'            \
+          | cut -d '.' -f -2               \
+          || echo 'latest'                 \
+          )";
+
+          repo="$(echo '${{ inputs.repo }}' | tr '[:upper:]' '[:lower:]')";
+          tags="$(echo '${{ inputs.matrix }}'          \
+          | jq -r '.include | map(.tag + "-" + .os)[]' \
+          | tr -d :                                    \
+          )";
+
+          for tag in ${tags}; do
+
+            # Download apt sources
+            docker run --rm -tu root -w /tmp/src                                         \
+              --platform linux/${{ matrix.arch }}                                        \
+              -v "${{ runner.temp }}/${{ matrix.arch }}-srcs:/tmp/src"                   \
+              -v "${{ runner.temp }}/download-apt-srcs.sh:/usr/bin/download-apt-srcs.sh" \
+              ghcr.io/${repo}:${VERSION}-${tag} /bin/bash /usr/bin/download-apt-srcs.sh  ;
+
+            # Free up disk space
+            docker rmi ghcr.io/${repo}:${VERSION}-${tag} || true;
+
+          done
+
+      - name: Upload ${{ matrix.arch }}-srcs
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 1
+          name: ${{ matrix.arch }}-srcs
+          path: ${{ runner.temp }}/${{ matrix.arch }}-srcs

@@ -1,0 +1,48 @@
+name: build-image
+
+description: Build image
+
+inputs:
+  tag:
+    type: string
+    required: true
+    description: Image tag
+  arch:
+    type: string
+    required: true
+    description: Image arch
+  repo:
+    type: string
+    required: true
+    description: Image repository
+
+outputs:
+  repo:
+    value: ${{ steps.build.outputs.repo }}
+
+runs:
+  using: composite
+  steps:
+
+    - name: Setup runner environment
+      uses: ./.github/actions/setup-runner-env
+
+    - name: Install devcontainers CLI
+      uses: ./.github/actions/install-devcontainers-cli
+
+    - id: build
+      name: Build ghcr.io/${{ inputs.repo }}:${{ inputs.tag }}-${{ inputs.arch }}
+      shell: bash
+      env:
+        NODE_NO_WARNINGS: 1
+      run: |
+        repo="$(echo "${{ inputs.repo }}" | tr '[:upper:]' '[:lower:]')";
+        echo "repo=${repo}" >> $GITHUB_OUTPUT;
+
+        devcontainer build \
+          --platform "linux/${{ inputs.arch }}" \
+          --workspace-folder "$(realpath -m ./image)" \
+          --cache-from "ghcr.io/${repo}:${{ inputs.tag }}" \
+          --image-name "ghcr.io/${repo}:${{ inputs.tag }}" \
+          --output "type=oci,dest=${{ runner.temp }}/${{ inputs.arch }}.tar" \
+          ;

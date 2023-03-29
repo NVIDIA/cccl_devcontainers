@@ -1,0 +1,35 @@
+name: Sources
+
+concurrency:
+  group: sources-on-${{ github.event_name }}-from-${{ github.ref_name }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+
+jobs:
+  image-matrix:
+    name: Determine image matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+      - id: matrix
+        name: Determine image matrix
+        uses: ./.github/actions/image-matrix
+
+  download-srcs:
+    if: needs.image-matrix.outputs.matrix != '{"include":[]}'
+    name: Download apt sources
+    needs: image-matrix
+    secrets: inherit
+    uses: ./.github/workflows/download-sources.yml
+    permissions:
+      packages: write
+    with:
+      matrix : "${{ needs.image-matrix.outputs.matrix }}"
+      repo: "${{ format('{0}/cccl/devcontainers', github.repository_owner) }}"
